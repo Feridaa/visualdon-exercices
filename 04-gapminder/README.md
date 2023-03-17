@@ -1,13 +1,13 @@
 
 ## Installation
-Comme la semaine dernière, le dossier d'exercice contient les élément nécéssaire pour démarrer un serveur [Node.js](https://nodejs.org/en/) en local et de *traduire* votre code ES6 dans un langage lisible par le navigateur avec [webpack](https://webpack.js.org/).  
-* Rentrez dans le dossier *04-gapminder-1* ``cd 04-gapminder-1/``
+Comme la semaine dernière, le dossier d'exercice contient les éléments nécéssaires pour démarrer un serveur [Node.js](https://nodejs.org/en/) en local et de *traduire* votre code ES6 dans un langage lisible par le navigateur avec [Vite](https://vitejs.dev/).
+* Rentrez dans le dossier *04-gapminder* ``cd 04-gapminder/``
 * Installez les packages nécessaires et qui sont dans le package.json ```npm install```
-* Démarrez le serveur ```npm start```
+* Démarrez le serveur ```npm run dev```
 
-:rocket: Vous devriez avoir accès à votre serveur local sur [localhost:8080](http:localhost:8080) :rocket:
+:rocket: Vous devriez avoir accès à votre serveur local sur [localhost:5173](http:localhost:5173) :rocket:
 
-Comme la semaine passée, le fichier html se trouve dans ```public/index.html``` et l'exercice se déroulera dans le fichier ```src/ìndex.js```, où vous allez enfin charger et manipuler des données. 
+Comme la semaine passée, le fichier html se trouve dans ```index.html``` et l'exercice se déroulera dans le fichier ```src/ìndex.js```, où vous allez enfin charger et manipuler des données. 
 
 
 ## But
@@ -23,15 +23,14 @@ Vous avez à disposition 3 jeux de données:
 * ```data/life_expectancy_years.csv``` : espérance de vie par pays et pour chaque année depuis 1800
 * ```data/population_total.csv``` : population depuis 1800
 
-## Graphique statique (délai 1 avril)
+## Graphique statique 
 Le premier rendu implique la visualisation statique des données ```data/gapminder.csv``` pour l'année 2021 sous forme de [Scatter/Bubble Chart](https://www.gapminder.org/tools/#$chart-type=bubbles&url=v1). Vous aurez sur l'axe X les données de PIB par habitant et sur l'axe Y l'espérance de vie. La taille des cercles devra être proportionnelle à la population du pays. 
 
 
-## Cartographie (délai 8 avril)
+## Cartographie 
 Représentez les valeurs d'espérance de vie sur une carte. 
-Trouver des données géographiques en format *.geojson*, et visualiser l'espérance de vie sous forme de : 
-* [Carte choroplète](https://d3-graph-gallery.com/graph/choropleth_hover_effect.html)
-* [Cartogramme](https://d3-graph-gallery.com/cartogram)
+Trouver des données géographiques en format *.geojson*, et visualiser l'espérance de vie sous forme de [carte choroplète](https://d3-graph-gallery.com/graph/choropleth_hover_effect.html).
 
-## Animation (délai 22 avril)
+
+## Animation 
 Animer les données selon les années. En bref : faite le premier graphique, mais pour chaque année! Cela doit ressembler à la visualisation proposée par [Gapminder](https://www.gapminder.org/tools/#$chart-type=bubbles&url=v1).

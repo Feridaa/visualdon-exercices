@@ -31,7 +31,23 @@ Promise.all([json(postsUrl), json(userUrl)]).then(([posts, users]) => {
     return new_object;
   });
 
+<<<<<<< HEAD
   const container = select("body").append("div");
+=======
+        // 1. Nouvel objet
+        let result1 =  users.forEach(usr => {
+            let posts_filtered = posts.filter(post => post.userId === usr.id)
+
+            console.log("Posts filtrés", posts_filtered);
+
+            let new_object = {
+                "nom_utilisateur" : usr.name,
+                "ville" : usr.address.city,
+                "titres_posts" : posts_filtered.map(post => post.title),
+            }
+            return new_object;
+        });
+>>>>>>> upstream/main
 
   container
     .selectAll("p")

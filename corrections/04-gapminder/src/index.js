@@ -1,15 +1,18 @@
-import * as d3 from 'd3'
+import {select, selectAll} from "d3-selection";
+import {scaleSqrt, scaleLinear, scalePow} from "d3-scale";
+import {max, min} from "d3-array";
+import {axisLeft, axisBottom} from "d3-axis";
+import {geoMercator, geoPath} from "d3-geo";
+import {json} from "d3-fetch";
+import {transition} from "d3-transition";
+import {easeLinear} from "d3-ease";
 
-// Pour importer les données
+
+// Pour importer les données (@rollup/plugin-dsv)
 import populationData from '../data/population_total.csv'
 import lifeData from '../data/life_expectancy_years.csv'
 import incomeData from '../data/income_per_person_gdppercapita_ppp_inflation_adjusted.csv'
 
-
-// Récupère toutes les années
-const annees = Object.keys(populationData[0])
-
-console.log(annees)
 
 
 let converterSI = (array, variable, variableName) => {
@@ -47,12 +50,13 @@ let converterSI = (array, variable, variableName) => {
 };
 
 
-
+// Récupère toutes les années
+const annees = Object.keys(populationData[0])
 
 let pop = [],
     income = [],
     life = [],
-dataCombined = [];
+    dataCombined = [];
 
 
 // Merge data
@@ -71,6 +75,7 @@ const mergeByCountry = (a1, a2, a3) => {
 }
 
 
+
 annees.forEach(annee => {
     pop.push({"annee":annee, "data" : converterSI(populationData, annee, "pop")})
     income.push({"annee":annee, "data" : converterSI(incomeData, annee, "income")})
@@ -84,6 +89,7 @@ annees.forEach(annee => {
 });
 
 
+
 // Visualisation statique //
 // Data 2021
 const data2021 = dataCombined.filter(d => d.annee == 2021).map(d => d.data)[0]
@@ -92,7 +98,7 @@ const margin = {top : 10, right: 40, bottom: 20, left: 40},
     width = 0.8*window.innerWidth - margin.left - margin.right,
     height = 0.7*window.innerHeight + margin.top + margin.bottom;
 
-const figure = d3.select('#vizArea')
+const figure = select('#vizArea')
     .append('svg')
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -100,25 +106,25 @@ const figure = d3.select('#vizArea')
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-const popScale = d3.scaleSqrt()
-    .domain([0,d3.max(data2021.map(d => d.pop))])
+const popScale = scaleSqrt()
+    .domain([0,max(data2021.map(d => d.pop))])
     .range([2,30]);
 
-const incomeScale = d3.scaleLinear()
-    .domain([0,d3.max(data2021.map(d => d.income))])
+const incomeScale = scaleLinear()
+    .domain([0,max(data2021.map(d => d.income))])
     .range([0,width]);
 
-const lifeScale = d3.scalePow()
-    .domain([0,d3.max(data2021.map(d => d.life))])
+const lifeScale = scalePow()
+    .domain([0,max(data2021.map(d => d.life))])
     .range([height,0])
         .exponent(3);
 
 figure.append('g')
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(incomeScale));
+    .call(axisBottom(incomeScale));
 
 figure.append('g')
-    .call(d3.axisLeft(lifeScale));
+    .call(axisLeft(lifeScale));
 
 figure.append("text")
     .attr("class", "x label")
@@ -138,7 +144,7 @@ figure.append("text")
 
 
 // Carte choroplète
-const map = d3.select('#mapArea')
+const map = select('#mapArea')
     .append('svg')
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -146,23 +152,22 @@ const map = d3.select('#mapArea')
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
-const projection = d3.geoMercator()
+const projection = geoMercator()
     .scale(70)
     .center([0,20])
     .translate([width / 2, height / 2]);
 
-const path = d3.geoPath().projection(projection);
+const path = geoPath().projection(projection);
 
 
-const colorScale = d3.scaleLinear()
-    .domain([d3.min(data2021.map(d=>d.income)), d3.max(data2021.map(d=>d.income))])
+const colorScale = scaleLinear()
+    .domain([min(data2021.map(d=>d.income)), max(data2021.map(d=>d.income))])
     .range(["white", "steelblue"]);
 
-d3.json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then((data) => {
+json("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson").then((data) => {
 
     // Changer le nom USA (Pour les autres pays, il faudrait faire le même exercice)
     const index = data2021.map(d=> d.country).indexOf('United States');
-    console.log(index)
     if (index !== -1) {
         data2021[index].country= 'USA';
     }
@@ -201,7 +206,7 @@ function play() {
         i++;
     }
 
-    d3.select('#paragraphe').text(dataCombined[i].annee)
+    select('#paragraphe').text(dataCombined[i].annee)
     updateChart(dataCombined[i].data);
 
 }
@@ -220,13 +225,13 @@ function updateChart(data_iteration) {
                 .attr('cx', d => incomeScale(d.income))
                 .attr('cy', d => lifeScale(d.life))
                 .attr('r', 0)
-                .transition(d3.transition()
+                .transition(transition()
                     .duration(500)
-                    .ease(d3.easeLinear))
+                    .ease(easeLinear))
                 .attr('r', d=> popScale(d.pop))
                 .attr('fill', 'rgba(0,0,0,.5)')
             ,
-            update => update.transition(d3.transition().duration(500).ease(d3.easeLinear))
+            update => update.transition(transition().duration(500).ease(easeLinear))
                         .attr('cx', d => incomeScale(d.income))
                         .attr('cy', d => lifeScale(d.life)).attr('r', d=> popScale(d.pop)),
             exit => exit.remove())
@@ -235,6 +240,7 @@ function updateChart(data_iteration) {
 
 document.getElementById("play").addEventListener("click", animate);
 document.getElementById("stop").addEventListener("click", stop);
+
 
 
 
